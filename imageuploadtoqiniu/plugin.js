@@ -1,5 +1,13 @@
+/**
+ *plugins.js
+ *
+ *Released under MIT License.
+ *Copyright (c) 2014-2015 www.friendsbt.com. All rights reserved.
+ *
+ */
 tinymce.PluginManager.add('imageuploadtoqiniu', function(editor) {
 
+  //uploader的设置请参考七牛官方文档，根据需要修改参数
   var initUploader = function() {
     Qiniu.uploader({
       runtimes: 'html5,flash,html4',
@@ -14,11 +22,10 @@ tinymce.PluginManager.add('imageuploadtoqiniu', function(editor) {
           var res = jQuery.parseJSON(info);
           var sourceLink = domain + res.key;
           $('#image-url').val(sourceLink);
-          //alert('ok');
         },
       }
     });
-  }
+  };
 
   var showDialog = function(editor) {
     editor.windowManager.open({
