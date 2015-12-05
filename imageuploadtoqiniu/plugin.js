@@ -1,18 +1,10 @@
-/**
- *plugins.js
- *
- *Released under MIT License.
- *Copyright (c) 2014-2015 www.friendsbt.com. All rights reserved.
- *
- */
 tinymce.PluginManager.add('imageuploadtoqiniu', function(editor) {
 
-  //uploader的设置请参考七牛官方文档，根据需要修改参数
   var initUploader = function() {
     Qiniu.uploader({
       runtimes: 'html5,flash,html4',
       browse_button: 'image-pick',
-      uptoken: '3rer6DB4jKt2CqSVzBjNmAC3NQe4s_LkK5PuOB4s:0ztBdZ1REnoVwrDqJCjsL61FIfU=:eyJzY29wZSI6InhpYW95dWFueGluZ2tvbmciLCJkZWFkbGluZSI6MTQ0NDQyNDEyMCwicmV0dXJuQm9keSI6IntcImtleVwiOiQoa2V5KSxcImhhc2hcIjokKGV0YWcpLFwibmFtZVwiOiQoZm5hbWUpfSJ9',
+      uptoken_url: '/fetch_token?img=1',
       domain: 'http://7xjkhy.dl1.z0.glb.clouddn.com/',
       max_retries: 3,
       auto_start: true,
@@ -21,11 +13,27 @@ tinymce.PluginManager.add('imageuploadtoqiniu', function(editor) {
           var domain = up.getOption('domain');
           var res = jQuery.parseJSON(info);
           var sourceLink = domain + res.key;
+          $('#img-state').text('上传完成!').show();
           $('#image-url').val(sourceLink);
         },
+
+        'UploadProgress': function(up, file) {
+          if (file.status === plupload.UPLOADING) {
+            $('#img-state').text('正在上传  ' + file.percent + '%').show();
+          } else {
+
+            $('#img-state').text('正在尝试上传...').show();
+          }
+        },
+        'Error': function(up, err, errTip) {
+          $('#img-state').text('上传出错,请重试！').show();
+        },
+        //'UploadComplete': function(up, file) {
+        //  $('#img-state').text('上传完成').show();
+        //}
       }
     });
-  };
+  }
 
   var showDialog = function(editor) {
     editor.windowManager.open({
@@ -40,6 +48,11 @@ tinymce.PluginManager.add('imageuploadtoqiniu', function(editor) {
         text: 'Pick a image',
         name: 'image-pick',
         id: 'image-pick'
+      }, {
+        type: 'label',
+        text: '请输入图片地址或从本地选择上传!',
+        id: 'img-state',
+        //style: 'display:none !important;height:30px;'
       }],
       onsubmit: function(e) {
         onSubmit(editor);
